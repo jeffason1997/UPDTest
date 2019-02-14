@@ -6,23 +6,18 @@ using System.Threading;
 
 
 namespace UPDTest
+
 {
     class Program
     {
         static void Main(string[] args)
         {
-           // Thread thread = startSenderThread("192.168.43.88", 8080);
+            // Thread thread = startSenderThread("192.168.43.88", 8080);
             Thread thread = StartUPDServer();
             thread.Start();
-            while (thread.IsAlive)
-            {
-                if (Console.ReadKey().Key == ConsoleKey.Enter)
-                {
-                    Console.WriteLine("thread stopped");
-                    thread.Abort();
-                }
-            }
-
+            Console.ReadKey();
+            Console.WriteLine("\nthread stopped");
+            thread.Abort();
             Console.ReadKey();
         }
 
@@ -39,7 +34,7 @@ namespace UPDTest
 
         static void sender(string ip, int port)
         {
-            
+
             UdpClient udpServer = new UdpClient(port);
 
             while (true)
@@ -48,7 +43,6 @@ namespace UPDTest
                 string text = "hello";
                 byte[] send_buffer = Encoding.ASCII.GetBytes(text);
                 udpServer.Send(send_buffer, send_buffer.Length, remoteEP); // if data is received reply letting the client know that we got his data    
-                Console.WriteLine("hello");
                 Thread.Sleep(100);
             }
         }
@@ -62,7 +56,6 @@ namespace UPDTest
                 var remoteEP = new IPEndPoint(IPAddress.Any, 8080);
                 try
                 {
-                    Console.WriteLine("hello");
                     var data = server.Receive(ref remoteEP);
                     ParseServerData(data);
                 }
