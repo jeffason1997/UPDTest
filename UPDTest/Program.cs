@@ -3,16 +3,23 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace UPDTest
 
 {
     class Program
     {
+        static BitmapShowForm form;
+
         static void Main(string[] args)
         {
             // Thread thread = startSenderThread("192.168.43.88", 8080);
+            form = new BitmapShowForm();
+            new Thread(() => { form.ShowDialog(); }).Start();
+
             Thread thread = StartUPDServer();
             thread.Start();
             Console.ReadKey();
@@ -67,7 +74,13 @@ namespace UPDTest
 
         static void ParseServerData(byte[] data)
         {
-            Console.WriteLine(Encoding.Default.GetString(data));
+            //Console.WriteLine(Encoding.ASCII.GetString(data));
+            Bitmap bmp;
+            using (var ms = new MemoryStream(data))
+            {
+                bmp = new Bitmap(ms);
+                form.ShowBitmap(bmp);
+            }
         }
 
     }
