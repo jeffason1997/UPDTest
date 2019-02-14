@@ -25,7 +25,20 @@ namespace UPDTest
 
         public void ShowBitmap(Bitmap b)
         {
-            PictureBox.Image = b;
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() =>
+                {
+                    PictureBox.Image = new Bitmap(b, 640, 480);
+                    //PictureBox.Image = b;
+                    PictureBox.Refresh();
+                }));
+            } else
+            {
+                //PictureBox.Image = b;
+                PictureBox.Image = new Bitmap(b, 640, 480);
+                PictureBox.Refresh();
+            }
         }
     }
 }

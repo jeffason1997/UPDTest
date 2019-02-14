@@ -17,11 +17,11 @@ namespace UPDTest
         {
 
 
-            Thread thread = startSenderThread("192.168.43.88", 8080);
+            //Thread thread = startSenderThread("192.168.43.88", 8080);
             form = new BitmapShowForm();
             new Thread(() => { form.ShowDialog(); }).Start();
 
-            //Thread thread = StartUPDServer();
+            Thread thread = StartUPDServer(911);
             thread.Start();
             Console.ReadKey();
             Console.WriteLine("\nthread stopped");
@@ -34,9 +34,9 @@ namespace UPDTest
             return new Thread(() => { sender(ip, port); });
         }
 
-        static Thread StartUPDServer()
+        static Thread StartUPDServer(int port)
         {
-            return new Thread(() => { receiver(); });
+            return new Thread(() => { receiver(port); });
         }
 
 
@@ -54,13 +54,13 @@ namespace UPDTest
             }
         }
 
-        static void receiver()
+        static void receiver(int port)
         {
-            UdpClient server = new UdpClient(8080);
+            UdpClient server = new UdpClient(port);
             server.Client.ReceiveTimeout = 50;
             while (true)
             {
-                var remoteEP = new IPEndPoint(IPAddress.Any, 8080);
+                var remoteEP = new IPEndPoint(IPAddress.Any, port);
                 try
                 {
                     var data = server.Receive(ref remoteEP);
@@ -74,7 +74,7 @@ namespace UPDTest
 
         static void ParseServerData(byte[] data)
         {
-            //Console.WriteLine(Encoding.ASCII.GetString(data));
+            Console.WriteLine("Data received");
             Bitmap bmp;
             using (var ms = new MemoryStream(data))
             {
