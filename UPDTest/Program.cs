@@ -1,11 +1,10 @@
 using System;
+using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 
 namespace UPDTest
 
@@ -16,12 +15,13 @@ namespace UPDTest
 
         static void Main(string[] args)
         {
-            Camera.TMain(args);
-            // Thread thread = startSenderThread("192.168.43.88", 8080);
+
+
+            Thread thread = startSenderThread("192.168.43.88", 8080);
             form = new BitmapShowForm();
             new Thread(() => { form.ShowDialog(); }).Start();
 
-            Thread thread = StartUPDServer();
+            //Thread thread = StartUPDServer();
             thread.Start();
             Console.ReadKey();
             Console.WriteLine("\nthread stopped");
@@ -36,26 +36,25 @@ namespace UPDTest
 
         static Thread StartUPDServer()
         {
-            return new Thread(() => { StartServer(); });
+            return new Thread(() => { receiver(); });
         }
 
 
         static void sender(string ip, int port)
         {
-
+            Camera cam = new Camera();
             UdpClient udpServer = new UdpClient(port);
 
             while (true)
             {
                 var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
-                string text = "hello";
-                byte[] send_buffer = Encoding.ASCII.GetBytes(text);
-                udpServer.Send(send_buffer, send_buffer.Length, remoteEP); // if data is received reply letting the client know that we got his data    
+                byte[] pic = cam.getBitArray();
+                udpServer.Send(pic, pic.Length, remoteEP); // if data is received reply letting the client know that we got his data    
                 Thread.Sleep(100);
             }
         }
 
-        static void StartServer()
+        static void receiver()
         {
             UdpClient server = new UdpClient(8080);
             server.Client.ReceiveTimeout = 50;
