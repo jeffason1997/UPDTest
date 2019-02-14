@@ -12,12 +12,13 @@ namespace UPDTest
     {
         static void Main(string[] args)
         {
+            Camera.TMain(args);
             // Thread thread = startSenderThread("192.168.43.88", 8080);
-            Thread thread = StartUPDServer();
-            thread.Start();
-            Console.ReadKey();
-            Console.WriteLine("\nthread stopped");
-            thread.Abort();
+            //Thread thread = StartUPDServer();
+            //thread.Start();
+            //Console.ReadKey();
+            //Console.WriteLine("\nthread stopped");
+            //thread.Abort();
             Console.ReadKey();
         }
 
