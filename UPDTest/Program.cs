@@ -12,15 +12,12 @@ namespace UPDTest
     class Program
     {
         static BitmapShowForm form;
+        private static string ip = "192.168.43.88";
+        private static int port = 8080;
 
         static void Main(string[] args)
         {
-
-
-            Thread thread = startSenderThread("192.168.43.88", 8080);
-            form = new BitmapShowForm();
-            new Thread(() => { form.ShowDialog(); }).Start();
-
+            Thread thread = startSenderThread();
             //Thread thread = StartUPDServer();
             thread.Start();
             Console.ReadKey();
@@ -29,18 +26,21 @@ namespace UPDTest
             Console.ReadKey();
         }
 
-        static Thread startSenderThread(string ip, int port)
+        static Thread startSenderThread()
         {
-            return new Thread(() => { sender(ip, port); });
+            return new Thread(() => { sender(); });
         }
 
         static Thread StartUPDServer()
         {
+            form = new BitmapShowForm();
+            new Thread(() => { form.ShowDialog(); }).Start();
+
             return new Thread(() => { receiver(); });
         }
 
 
-        static void sender(string ip, int port)
+        static void sender()
         {
             Camera cam = new Camera();
             UdpClient udpServer = new UdpClient(port);
@@ -49,18 +49,20 @@ namespace UPDTest
             {
                 var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
                 byte[] pic = cam.getBitArray();
-                udpServer.Send(pic, pic.Length, remoteEP); // if data is received reply letting the client know that we got his data    
-                Thread.Sleep(100);
+                udpServer.Send(pic, pic.Length, remoteEP);
+                Console.WriteLine("send");
+                Thread.Sleep(1);
             }
+
         }
 
         static void receiver()
         {
-            UdpClient server = new UdpClient(8080);
+            UdpClient server = new UdpClient(port);
             server.Client.ReceiveTimeout = 50;
             while (true)
             {
-                var remoteEP = new IPEndPoint(IPAddress.Any, 8080);
+                var remoteEP = new IPEndPoint(IPAddress.Any, port);
                 try
                 {
                     var data = server.Receive(ref remoteEP);

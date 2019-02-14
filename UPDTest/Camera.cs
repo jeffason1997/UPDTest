@@ -2,55 +2,53 @@
 using AForge.Video.DirectShow;
 using System;
 using System.Drawing;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
+using System.Timers;
 
 namespace UPDTest
 {
     class Camera
     {
+        private Webcam camera;
+        private bool busy = true;
+        public Camera()
+        {
+            camera = new Webcam(new Size(200, 100), 500000);
+            camera.Start();
+
+            Timer aTimer = new Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 400;
+            aTimer.Enabled = true;
+        }
+
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        {
+            if (busy)
+            {
+                busy = false;
+            }
+            else
+            {
+                camera.Stop();
+            }
+        }
+
         public byte[] getBitArray()
         {
-            Webcam camera = new Webcam(new Size(320, 240), 30);
             Image captured_image = null;
             try
             {
-                camera.Start();
-                Application.DoEvents();
-                Thread.Sleep(10);
-                captured_image = camera.currentImage;
-                if (captured_image == null)
-                {
-                    throw new Exception("Device time-out");
-                }
-                else
-                {
-                    byte[] map;
-                    using (var ms = new MemoryStream())
-                    {
-                        captured_image.Save(ms, captured_image.RawFormat);
-                        map = ms.ToArray();
-                    }
-
-                    return map;
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                Console.WriteLine("Error code 1 : Please specify two valid file-paths");
+                while (captured_image == null) { captured_image = camera.currentImage; }
+                busy = true;
+                ImageConverter converter = new ImageConverter();
+                return (byte[])converter.ConvertTo(captured_image, typeof(byte[]));
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error code 2 : " + ex.Message);
+                return null;
             }
-            finally
-            {
-                Application.Exit();
-            }
-            return null;
         }
-
     }
 
     class Webcam
@@ -64,6 +62,7 @@ namespace UPDTest
 
         public Webcam(Size framesize, int framerate)
         {
+
             this.frameSize = framesize;
             this.frameRate = framerate;
             this.currentImage = null;
