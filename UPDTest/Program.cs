@@ -34,7 +34,7 @@ namespace UPDTest
             return new Thread(() => { sender(); });
         }
 
-        static Thread StartUPDServer(int port)
+        static Thread StartUPDServer()
         {
             form = new BitmapShowForm();
             new Thread(() => { form.ShowDialog(); }).Start();
@@ -53,7 +53,7 @@ namespace UPDTest
                 var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
                 byte[] pic = cam.getBitArray();
                 udpServer.Send(pic, pic.Length, remoteEP);
-                Console.WriteLine("send");
+                //Console.WriteLine("send");
                 Thread.Sleep(1);
             }
         }

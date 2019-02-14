@@ -24,13 +24,9 @@ namespace UPDTest
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             if (busy)
-            {
                 busy = false;
-            }
             else
-            {
                 camera.Stop();
-            }
         }
 
         public byte[] getBitArray()
@@ -45,7 +41,7 @@ namespace UPDTest
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error code 2 : " + ex.Message);
+                Console.WriteLine("Error code : " + ex.Message);
                 return null;
             }
         }
