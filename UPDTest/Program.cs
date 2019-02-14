@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace UPDTest
 
@@ -14,6 +16,7 @@ namespace UPDTest
         static BitmapShowForm form;
         private static string ip = "192.168.43.88";
         private static int port = 8080;
+        static List<IPAddress> addresses = new List<IPAddress>();
 
         static void Main(string[] args)
         {
@@ -31,7 +34,7 @@ namespace UPDTest
             return new Thread(() => { sender(); });
         }
 
-        static Thread StartUPDServer()
+        static Thread StartUPDServer(int port)
         {
             form = new BitmapShowForm();
             new Thread(() => { form.ShowDialog(); }).Start();
@@ -53,7 +56,6 @@ namespace UPDTest
                 Console.WriteLine("send");
                 Thread.Sleep(1);
             }
-
         }
 
         static void receiver()
@@ -66,7 +68,7 @@ namespace UPDTest
                 try
                 {
                     var data = server.Receive(ref remoteEP);
-                    ParseServerData(data);
+                    ParseServerData(data, remoteEP.Address);
                 }
                 catch (SocketException e)
                 {
@@ -74,14 +76,19 @@ namespace UPDTest
             }
         }
 
-        static void ParseServerData(byte[] data)
+        static void ParseServerData(byte[] data, IPAddress ipAddres)
         {
-            //Console.WriteLine(Encoding.ASCII.GetString(data));
+            //Console.WriteLine("Data received");
+            if(!addresses.Contains(ipAddres))
+            {
+                addresses.Add(ipAddres);
+            }
             Bitmap bmp;
             using (var ms = new MemoryStream(data))
             {
                 bmp = new Bitmap(ms);
-                form.ShowBitmap(bmp);
+                int index = addresses.FindIndex(a => a.Equals(ipAddres));
+                form.ShowBitmap(bmp, index);
             }
         }
 
