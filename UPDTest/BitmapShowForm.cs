@@ -15,12 +15,12 @@ namespace UPDTest
         public BitmapShowForm()
         {
             InitializeComponent();
-            Bitmap b = new Bitmap(1, 1);
-            b.SetPixel(0, 0, Color.White);
-            Bitmap c = new Bitmap(1, 1);
-            c.SetPixel(0, 0, Color.Green);
-            ShowBitmap(new Bitmap(b, 200, 100), 0);
-            ShowBitmap(new Bitmap(c, 200, 100), 1);
+            //Bitmap b = new Bitmap(1, 1);
+            //b.SetPixel(0, 0, Color.White);
+            //Bitmap c = new Bitmap(1, 1);
+            //c.SetPixel(0, 0, Color.Green);
+            //ShowBitmap(new Bitmap(b, 200, 100), 0);
+            //ShowBitmap(new Bitmap(c, 200, 100), 1);
 
         }
 

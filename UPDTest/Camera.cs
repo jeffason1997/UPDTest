@@ -2,6 +2,8 @@
 using AForge.Video.DirectShow;
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Timers;
 
 namespace UPDTest
@@ -9,38 +11,22 @@ namespace UPDTest
     class Camera
     {
         private Webcam camera;
-        private bool busy = true;
-
 
         public Camera()
         {
-            //camera = new Webcam(new Size(200, 100), 500000);
-            camera = new Webcam(new Size(200, 100), 30);
+            camera = new Webcam(new Size(858, 480), 30);
             camera.Start();
-
-            Timer aTimer = new Timer();
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = 400;
-            aTimer.Enabled = true;
-        }
-
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
-        {
-            if (busy)
-                busy = false;
-            //else
-                //camera.Stop();
         }
 
         public byte[] getBitArray()
         {
-            Image captured_image = null;
+            Bitmap captured_image = null;
             try
             {
                 while (captured_image == null) { captured_image = camera.currentImage; }
-                busy = true;
-                ImageConverter converter = new ImageConverter();
-                return (byte[])converter.ConvertTo(captured_image, typeof(byte[]));
+                MemoryStream strm = new MemoryStream();
+                captured_image.Save(strm, ImageFormat.Jpeg);
+                return strm.ToArray();
             }
             catch (Exception ex)
             {

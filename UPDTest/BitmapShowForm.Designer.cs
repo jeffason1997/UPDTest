@@ -36,7 +36,7 @@
             // 
             this.PictureBox.Location = new System.Drawing.Point(0, 0);
             this.PictureBox.Name = "PictureBox";
-            this.PictureBox.Size = new System.Drawing.Size(623, 435);
+            this.PictureBox.Size = new System.Drawing.Size(1300, 750);
             this.PictureBox.TabIndex = 0;
             this.PictureBox.TabStop = false;
             // 
@@ -44,7 +44,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(622, 433);
+            this.ClientSize = new System.Drawing.Size(1282, 703);
             this.Controls.Add(this.PictureBox);
             this.Name = "BitmapShowForm";
             this.Text = "BitmapShowForm";

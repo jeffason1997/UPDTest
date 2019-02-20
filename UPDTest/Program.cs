@@ -20,8 +20,8 @@ namespace UPDTest
 
         static void Main(string[] args)
         {
-            Thread thread = startSenderThread();
-            //Thread thread = StartUPDServer();
+            Thread thread = UDPClientThread();
+            //Thread thread = UPDServerThread();
             thread.Start();
             Console.ReadKey();
             Console.WriteLine("\nthread stopped");
@@ -29,21 +29,20 @@ namespace UPDTest
             Console.ReadKey();
         }
 
-        static Thread startSenderThread()
+        static Thread UDPClientThread()
         {
-            return new Thread(() => { sender(); });
+            return new Thread(() => { StartClient(); });
         }
 
-        static Thread StartUPDServer()
+        static Thread UPDServerThread()
         {
             form = new BitmapShowForm();
             new Thread(() => { form.ShowDialog(); }).Start();
-
-            return new Thread(() => { receiver(); });
+            return new Thread(() => { StartServer(); });
         }
 
 
-        static void sender()
+        static void StartClient()
         {
             Camera cam = new Camera();
             UdpClient udpServer = new UdpClient(port);
@@ -52,12 +51,11 @@ namespace UPDTest
             {
                 byte[] pic = cam.getBitArray();
                 udpServer.Send(pic, pic.Length, remoteEP);
-                //Console.WriteLine("send");
-                Thread.Sleep(1);
+                Thread.Sleep(15);
             }
         }
 
-        static void receiver()
+        static void StartServer()
         {
             UdpClient server = new UdpClient(port);
             server.Client.ReceiveTimeout = 300;
@@ -67,31 +65,19 @@ namespace UPDTest
                 try
                 {
                     var data = server.Receive(ref remoteEP);
-                    ParseServerData(data, remoteEP.Address);
+                    Bitmap bmp;
+                    using (var ms = new MemoryStream(data))
+                    {
+                        bmp = new Bitmap(ms);
+                        form.ShowBitmap(bmp, 0);
+                    }
                 }
                 catch (SocketException e)
                 {
+                    //Dit betekent dat er een timeout heeft plaats gevonden. 
+                    //Dit heeft geen invloed op de rest van de werking van de server.
                 }
             }
         }
-
-        static void ParseServerData(byte[] data, IPAddress ipAddres)
-        {
-            ////Console.WriteLine("Data received");
-            //if(!addresses.Contains(ipAddres))
-            //{
-            //    addresses.Add(ipAddres);
-            //}
-            Bitmap bmp;
-            using (var ms = new MemoryStream(data))
-            {
-                bmp = new Bitmap(ms);
-                //int index = addresses.FindIndex(a => a.Equals(ipAddres));
-                form.ShowBitmap(bmp, 0);
-            }
-        }
-
     }
-
-
 }
