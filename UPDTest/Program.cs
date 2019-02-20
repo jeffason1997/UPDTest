@@ -14,7 +14,7 @@ namespace UPDTest
     class Program
     {
         static BitmapShowForm form;
-        private static string ip = "192.168.43.88";
+        private static string ip = "192.168.178.50";
         private static int port = 8080;
         static List<IPAddress> addresses = new List<IPAddress>();
 
@@ -47,10 +47,9 @@ namespace UPDTest
         {
             Camera cam = new Camera();
             UdpClient udpServer = new UdpClient(port);
-
+            var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
             while (true)
             {
-                var remoteEP = new IPEndPoint(IPAddress.Parse(ip), port);
                 byte[] pic = cam.getBitArray();
                 udpServer.Send(pic, pic.Length, remoteEP);
                 //Console.WriteLine("send");
@@ -61,10 +60,10 @@ namespace UPDTest
         static void receiver()
         {
             UdpClient server = new UdpClient(port);
-            server.Client.ReceiveTimeout = 50;
+            server.Client.ReceiveTimeout = 300;
+            var remoteEP = new IPEndPoint(IPAddress.Any, port);
             while (true)
             {
-                var remoteEP = new IPEndPoint(IPAddress.Any, port);
                 try
                 {
                     var data = server.Receive(ref remoteEP);
@@ -78,17 +77,17 @@ namespace UPDTest
 
         static void ParseServerData(byte[] data, IPAddress ipAddres)
         {
-            //Console.WriteLine("Data received");
-            if(!addresses.Contains(ipAddres))
-            {
-                addresses.Add(ipAddres);
-            }
+            ////Console.WriteLine("Data received");
+            //if(!addresses.Contains(ipAddres))
+            //{
+            //    addresses.Add(ipAddres);
+            //}
             Bitmap bmp;
             using (var ms = new MemoryStream(data))
             {
                 bmp = new Bitmap(ms);
-                int index = addresses.FindIndex(a => a.Equals(ipAddres));
-                form.ShowBitmap(bmp, index);
+                //int index = addresses.FindIndex(a => a.Equals(ipAddres));
+                form.ShowBitmap(bmp, 0);
             }
         }
 

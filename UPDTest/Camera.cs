@@ -10,9 +10,12 @@ namespace UPDTest
     {
         private Webcam camera;
         private bool busy = true;
+
+
         public Camera()
         {
-            camera = new Webcam(new Size(200, 100), 500000);
+            //camera = new Webcam(new Size(200, 100), 500000);
+            camera = new Webcam(new Size(200, 100), 30);
             camera.Start();
 
             Timer aTimer = new Timer();
@@ -25,8 +28,8 @@ namespace UPDTest
         {
             if (busy)
                 busy = false;
-            else
-                camera.Stop();
+            //else
+                //camera.Stop();
         }
 
         public byte[] getBitArray()
